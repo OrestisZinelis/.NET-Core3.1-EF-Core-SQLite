@@ -1,0 +1,162 @@
+openapi: 3.0.0
+info:
+  title: Account Management API
+  version: 1.0.0
+components:
+  schemas:
+    Transaction:
+      type: object
+      properties:
+        account_id:
+          type: string
+          format: uuid
+        amount:
+          type: integer
+      required:
+        - account_id
+        - amount
+    AccountBalance:
+      type: object
+      properties:
+        balance:
+          type: integer
+      required:
+        - amount
+    MaxTransactionVolume:
+      type: object
+      properties:
+        maxVolume:
+          type: integer
+        accounts:
+          type: array
+          items:
+            type: string
+            format: uuid
+  examples:
+    TransactionWithPositiveAmount:
+      value:
+        account_id: '0afd02d3-6c59-46e7-b7bc-893c5e0b7ac2'
+        amount: 7
+    TransactionWithNegativeAmount:
+      value:
+        account_id: '5ae0ef78-e902-4c40-9f53-8cf910587312'
+        amount: -4
+    PositiveAccountBalance:
+      value:
+        balance: 10
+    NegativeAccountBalance:
+      value:
+        balance: -7
+    MaxTransactionVolumeExample:
+      value:
+        maxVolume: 4
+        accounts: [
+          "44a92331-a533-4dd3-82e3-3ff75219e33b",
+          "7c9be9e8-a6df-4f43-9a44-38c10ad0de4a"
+        ]
+paths:
+  /ping:
+    get:
+      summary: Healhcheck to make sure the service is responsive.
+      responses:
+        '200':
+          description: The service is up and running.
+  /amount:
+    post:
+      summary: Creates a new transaction which updates the current account balance.
+      parameters:
+        - in: header
+          name: Transaction-Id
+          schema:
+            type: string
+            format: uuid
+          example: 'cf479136-0a5b-42ad-a16c-26d9eda3b4aa'
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transaction'
+            examples:
+              TransactionWithPositiveAmount:
+                $ref: '#/components/examples/TransactionWithPositiveAmount'
+              TransactionWithNegativeAmount:
+                $ref: '#/components/examples/TransactionWithNegativeAmount'
+
+      responses:
+        '200':
+          description: Transaction created.
+        '400':
+          description: Mandatory body parameters missing or have incorrect type.
+        '405':
+          description: Specified HTTP method not allowed.
+        '415':
+          description: Specified content type not allowed.
+
+  /transaction/{transaction_id}:
+      get:
+        summary: Returns the transaction.
+        parameters:
+          - name: transaction_id
+            in: path
+            required: true
+            description: Transaction ID.
+            schema:
+              type: string
+              format: uuid
+            example: '023d2024-24bc-42c9-ab24-689eef6ea0f9'
+        responses:
+          '200':
+            description: Transaction details.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Transaction'
+                examples:
+                  TransactionWithPositiveAmount:
+                    $ref: '#/components/examples/TransactionWithPositiveAmount'
+                  TransactionWithNegativeAmount:
+                    $ref: '#/components/examples/TransactionWithNegativeAmount'
+          '404':
+            description: Transaction not found
+
+  /balance/{account_id}:
+    get:
+      summary: Returns the current account balance.
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          description: Account ID.
+          schema:
+            type: string
+            format: uuid
+          example: '5ba6e1b0-e3e7-483a-919a-a2fc17629a90'
+      responses:
+        '200':
+          description: Account balance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountBalance'
+              examples:
+                PositiveAccountBalance:
+                  $ref: '#/components/examples/PositiveAccountBalance'
+                NegativeAccountBalance:
+                  $ref: '#/components/examples/NegativeAccountBalance'
+        '404':
+          description: Account not found.
+  /max_transaction_volume:
+    get:
+      summary: Returns accounts with the max number of transactions.
+      responses:
+        '200':
+          description: Accounts with the max number of transactions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaxTransactionVolume'
+              examples:
+                MaxTransactionVolumeExample:
+                  $ref: '#/components/examples/MaxTransactionVolumeExample'

@@ -1,0 +1,12 @@
+node_modules
+cypress/videos
+cypress/plugins
+cypress/screenshots
+cypress/support
+bin
+obj
+backend/WebApiProxifyioTestdb/.vs
+.vs
+.vscode
+v16
+DesignTimeBuild

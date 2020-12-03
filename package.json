@@ -1,0 +1,12 @@
+{
+  "name": "account-management-backend-level-3",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "dotnet build ./backend/WebApiProxifyioTestdb/WebApiProxifyioTestdb.sln",
+    "start": "dotnet run --project ./backend/WebApiProxifyioTestdb/WebApiProxifyioTestdb/WebApiProxifyioTestdb.csproj",
+    "test": "cypress run"
+  },
+  "devDependencies": {
+    "cypress": "^5.4.0"
+  }
+}
